@@ -35,3 +35,13 @@ earthy tones.
 | Color #3 (Green) | #A0E8AF |
 | Color #3 (Purple) | #8E6EC2 |
 
+## Wireframes
+
+![wireframe designs](./wireframes.png)
+
+The wireframe design files can be found in `/docs/wireframes.excalidraw`. These
+sketches outline the core layout for:
+- home screen
+- sourdough customization form
+- order confirmation page
+- admin dashboard

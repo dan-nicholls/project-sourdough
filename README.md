@@ -11,7 +11,7 @@ Built with:
 - [Templ](https://templ.guide/) — HTML templating components for Go
 - [Tailwind CSS](https://tailwindcss.com/) — styling
 - [HTMX](https://htmx.org/) — frontend interactivity
-- [PostgreSQL](https://www.postgresql.org/) — DB
+- [SQLite3](https://sqlite.org/) — DB
 
 ## Requirements
 

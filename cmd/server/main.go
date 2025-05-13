@@ -4,34 +4,38 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"github.com/a-h/templ"
 
-	"github.com/dan-nicholls/project-sourdough/internal/web/templates"
+	"github.com/dan-nicholls/project-sourdough/internal/app"
+	"github.com/dan-nicholls/project-sourdough/internal/db"
+	"github.com/dan-nicholls/project-sourdough/internal/web"
 )
 
-type App struct {
-	server http.Server
-	port int
-}
-
-func (a *App) Start() error {
-	http.Handle("/", templ.Handler(templates.Home("This is an intro text")))
-
-	// Serve static files
-	fs := http.FileServer(http.Dir("./static"))
-	http.Handle("/static", fs)
-
-	fmt.Printf("Serving on port %d\n", a.port)
-	err := http.ListenAndServe(fmt.Sprintf(":%d", a.port), nil)
-	return err
-}
-
 func main() {
-	fmt.Println("Hello World!")
+	fmt.Println("Starting Project Sourdough...")
 
-	app := App{
-		port: 3000,
+	// Load Configurations
+	port := 3000
+	dbPath := "./orders.db"
+
+	// Initialise DB
+	sqlite := &db.Sqlite3{}
+	if err := sqlite.Connect(dbPath); err != nil {
+		log.Fatalf("Failed to connect: %v", err)
+	}
+	defer sqlite.Close()
+
+	if err := sqlite.EnsureSchema(); err != nil {
+		log.Fatalf("Failed to intialise schema: %v", err)
+	}
+	
+	// Setup app
+	appService := app.New(sqlite)
+
+	server := &http.Server{
+		Handler: web.NewRouter(appService),
+		Addr: fmt.Sprintf(":%d", port),
 	}
 
-	log.Fatal(app.Start())
+	fmt.Printf("🚀 Server running at port: %d\n", port)
+	log.Fatal(server.ListenAndServe())
 }

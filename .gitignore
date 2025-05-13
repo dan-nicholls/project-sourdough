@@ -33,3 +33,6 @@ static/css/tw.css
 
 .DS_STORE
 Thumbs.db
+
+# SQL DB files
+*.db

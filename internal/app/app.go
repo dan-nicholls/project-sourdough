@@ -6,10 +6,12 @@ import (
 
 type AppService struct {
 	Db db.Database
+	Config BreadConfigurations
 }
 
 func New(db db.Database) *AppService {
 	return &AppService{
 		Db: db,
+		Config: availableConfigs,
 	}
 }

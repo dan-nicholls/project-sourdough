@@ -1,0 +1,71 @@
+package templates
+
+templ Order() {
+	@layout("Order - Project Sourdough") {
+		<h1>Order</h1>
+		<form method="POST" action="/api/v1/order">
+			<div>
+				<div>Shapes</div>
+				<input type="radio" id="shape_round" name="shape" value="round" >
+				<label for="shape_round">Round</label>
+				<input type="radio" id="shape_oval" name="shape" value="oval" >
+				<label for="shape_oval">Oval</label>
+				<div class="controls">
+					<button>Back</button>
+					<button>Next</button>
+				</div>
+			</div>
+			<div>
+				<div>Flour Type</div>
+				<input type="radio" id="flour_white" name="flour" value="white" >
+				<label for="flour_white">White</label>
+				<input type="radio" id="flour_wholegrain" name="flour" value="wholegrain" >
+				<label for="flour_wholegrain">Wholegrain</label>
+				<div class="controls">
+					<button>Back</button>
+					<button>Next</button>
+				</div>
+			</div>
+			<div>
+				<label for="topping">Toppings</label>
+				<input type="radio" id="topping_none" name="topping" value="none" >
+				<label for="topping_none">None</label>
+				<input type="radio" id="topping_sesame" name="topping" value="sesame" >
+				<label for="topping_sesame">sesame</label>
+				<div class="controls">
+					<button>Back</button>
+					<button>Next</button>
+				</div>
+			</div>
+			<div>
+				<label for="scoring">Scoring</label>
+				<input type="radio" id="scoring_none" name="scoring" value="none" >
+				<label for="scoring_none">None</label>
+				<input type="radio" id="scoring_plain" name="scoring" value="plain" >
+				<label for="scoring_plain">Plain</label>
+				<input type="radio" id="scoring_wheat" name="scoring" value="wheat" >
+				<label for="scoring_wheat">Wheat</label>
+				<div class="controls">
+					<button>Back</button>
+					<button>Next</button>
+				</div>
+			</div>
+			<div>
+				<label for="name">Enter Details</label>
+				<input type="text" id="name" name="name" placeholder="enter name">
+				<input type="email" id="email" name="email" placeholder="enter email">
+				<div class="controls">
+					<button>Back</button>
+					<button>Next</button>
+				</div>
+			</div>
+			<div>
+				<label for="Submit">Confirm Order</label>
+				<div class="controls">
+					<input type="submit" value="Submit">
+					<input type="reset" value="Redo">
+				</div>
+			</div>
+		</form>
+	}
+}

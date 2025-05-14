@@ -55,10 +55,13 @@ func CreateOrderHandler(a *app.AppService) http.HandlerFunc {
 	}
 }
 
+
+
 func NewRouter(a *app.AppService) *http.ServeMux {
 	mux := http.NewServeMux()
 
 	mux.Handle("/", templ.Handler(templates.Home("This is an intro text")))
+	mux.Handle("/order", templ.Handler(templates.Order()))
 	mux.HandleFunc("/api/v1/order", CreateOrderHandler(a))
 
 	// Serve static files

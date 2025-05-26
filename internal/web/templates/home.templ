@@ -2,7 +2,18 @@ package templates
 
 templ Home(intro string) {
 	@layout("Project Sourdough") {
-		<h1>🍞 Project Sourdough</h1>
-		<p>{ intro }</p>
+		<div class="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md" id="main-content">
+			<div class="font-medium">Project Sourdough 🍞</div>
+			<p>Welcome! intro text here...</p>
+			<button 
+				hx-get="/order"
+				hx-target="#main-content"
+				hx-swap="innerHTML"
+				hx-indicator="#loading"
+				class="x-4 py-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition">
+				Get Started!
+			</button>
+			<div id="loading" class="hidden text-gray-500">Loading...</div>
+		</div>
 	}
 }

@@ -1,49 +1,127 @@
 package templates
 
 import (
+	"strconv"
+	"fmt"
+
 	"github.com/dan-nicholls/project-sourdough/internal/app"
+	"github.com/dan-nicholls/project-sourdough/internal/utils"
 )
 
-templ Controls() {
-	<div class="controls">
-		<button>Back</button>
-		<button>Next</button>
+templ OrderFlow() {
+	<div id="order-flow">
+	  <div hx-get="/order/step/start" hx-trigger="load" hx-target="#order-flow" hx-swap="innerHTML"></div>
 	</div>
 }
 
-templ BreadOption(label string, name string, options[]string) {
-	<div>
-		<div>{label}</div>
-		for _,option := range options {
-			<input type="radio" id="{name}_{option}" name="{name}" value="options" />
-			<label for="{name}_{option}">{option}</label>
+templ StepForm(step app.Step, stepIndex int, totalSteps int, previousValues map[string]string) {
+	<form 
+		hx-post={"/order/step/" + strconv.Itoa(stepIndex+1)}
+		hx-target="#order-flow"
+		hx-swap="innerHTML"
+	>
+		<!-- JSON-encoded state -->
+		for key, val := range previousValues {
+			<input type="hidden" name={key} value={val} />
 		}
-		@Controls()
+
+		<label>{step.Label}</label>
+		for _, opt := range step.Options {
+			<div>
+				<input type="radio" id={step.Name + "_" + opt} name={step.Name} value={opt} required />
+				<label for={step.Name + "_" + opt}>{opt}</label>
+			</div>
+		}
+
+		<button type="submit">Next</button>
+	</form>
+}
+
+templ OrderDetails(previousValues map[string]string) {
+	<form 
+		hx-post={"/order/step/review"}
+		hx-target="#order-flow"
+		hx-swap="innerHTML"
+	>
+		<!-- json-encoded state -->
+		for key, val := range previousValues {
+			<input type="hidden" name={key} value={val} />
+		}
+
+		<label>please enter your contact details</label>
+		<div>
+			<label for="name">name</label>
+			<input type="text" id="name" name="name" placeholder="enter name">
+		</div>
+		<div>
+			<label for="email">email</label>
+			<input type="email" id="email" name="email" placeholder="enter email">
+		</div>
+
+		<button type="submit">next</button>
+	</form>
+}
+
+templ OrderReview(previousValues map[string]string) {
+	<form onsubmit="return false;">
+		<!-- JSON-encoded state -->
+		for key, val := range previousValues {
+			<input type="hidden" name={key} value={val} />
+		}
+
+		<label>Order Details</label>
+		<div>
+			<pre>{fmt.Sprintf("%v", previousValues)}</pre>
+		</div>
+
+		<button
+			hx-post="/api/order"
+			hx-target="#order-flow"
+			hx-swap="innerHTML"
+			hx-headers='{"Content-Type": "application/json"}'
+			hx-vals={utils.JsonEscapedString(previousValues)}
+			class="bg-green-600 text-white px-4 py-2 rounded"
+		>Submit</button>
+	</form>
+	
+}
+
+templ OrderStart() {
+	<div>
+		<h1>Lets begin!</h1>
+		<form 
+			hx-post="/order/step/0" 
+			hx-target="#order-flow" 
+			hx-swap="innerHTML"
+		>
+			<button class="bg-blue-600 text-white px-4 py-2 rounded">Start</button>
+		</form>
 	</div>
 }
 
-templ Order(config app.BreadConfigurations) {
-	@layout("Order - Project Sourdough") {
-		<h1>Order</h1>
-		<form method="POST" action="/api/v1/order">
-			@BreadOption("Shape", "shape", config.ShapeTypes)
-			@BreadOption("Flour Type", "flour", config.FlourTypes)
-			@BreadOption("Toppings", "topping", config.ToppingTypes)
-			@BreadOption("Scoring", "scoring", config.ScoringTypes)
+templ OrderComplete() {
+	@layout("This is a title") {
+		<div>
+			<h1>🎉 Yippee!! 🎉</h1>
+			<p>Order confirmed!</p>
+		</div>
+	}
+}
 
-			<div>
-				<label for="name">Enter Details</label>
-				<input type="text" id="name" name="name" placeholder="enter name">
-				<input type="email" id="email" name="email" placeholder="enter email">
-				@Controls()
-			</div>
-			<div>
-				<label for="Submit">Confirm Order</label>
-				<div class="controls">
-					<input type="submit" value="Submit">
-					<input type="reset" value="Redo">
-				</div>
-			</div>
-		</form>
+templ OrderFailed() {
+	@layout("This is another title") {
+		<div>
+			<h1>Oops!</h1>
+			<p>i may have broken something, please let Dan know!</p>
+			<button
+				hx-get="/"
+				hx-target="body"
+				hx-swap="innerHTML"
+				hx-push-url="/"
+				class="bg-blue-600 text-white px-4 py-2 rounded"
+			>
+				Go Back
+			</button>
+		</div>
 	}
 }

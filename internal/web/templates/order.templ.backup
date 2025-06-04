@@ -1,0 +1,78 @@
+package templates
+
+import (
+	"github.com/dan-nicholls/project-sourdough/internal/app"
+	"strconv"
+)
+
+templ Controls(currentStep int, totalSteps int) {
+	<div class="controls mt-4 flex justify-between">
+		if currentStep > 0 {
+			<button
+				type="button"
+				class="back-btn bg-gray-500 text-white px-4 py-2 rounded"
+				data-step={strconv.Itoa(currentStep-1)}>
+				Back
+			</button>
+		}
+		if currentStep < totalSteps -1 {
+			<button
+				type="button"
+				class="next-btn bg-gray-500 text-white px-4 py-2 rounded"
+				data-step={strconv.Itoa(currentStep+1)}>
+				Next	
+			</button>
+		}
+	</div>
+}
+
+func getHiddenTag(isVisible bool) string {
+	if !isVisible {
+		return "hidden"
+	}
+	return ""
+}
+
+func getInputId(name, option string) string {
+	return name + "_" + option
+}
+
+templ BreadOption(label string, name string, options []string, isVisible bool, step int) {
+	<div class={"step " + getHiddenTag(isVisible)} id={"step-" + strconv.Itoa(step)}>
+		<div class="font-semibold mb-2">{label}</div>
+		for _, option := range options {
+			<input type="radio" id={name + "_" + option} name={name} value={option} />
+			<label for={name + "_" + option}>{option}</label>
+		}
+	</div>
+}
+
+templ Order(config app.BreadConfigurations) {
+	@layout("Order - Project Sourdough") {
+		<form method="POST" hx-post="/api/v1/order" hx-target="body" hx-swap="innerHTML">
+			<div id="form-steps" class="w-full max-w-xl space-y-6">
+				@BreadOption("Shape", "shape", config.ShapeTypes, true, 0)
+				@BreadOption("Flour Type", "flour", config.FlourTypes, false, 1)
+				@BreadOption("Toppings", "topping", config.ToppingTypes, false, 2)
+				@BreadOption("Scoring", "scoring", config.ScoringTypes, false, 3)
+
+				<div class="step hidden" id="step-4">
+					<label for="name">Enter Details</label>
+					<input type="text" id="name" name="name" placeholder="enter name">
+					<input type="email" id="email" name="email" placeholder="enter email">
+				</div>
+				<div class="step hidden" id="step-5">
+					<label for="Submit">Confirm Order</label>
+				</div>
+			</div>
+
+			<div id="controls" class="controls mt-6 flex justify-between">
+				<button type="button" class="back-btn bg-gray-500 text-white px-4 py-2 rounded hidden">Back</button>
+				<button type="button" class="next-btn bg-blue-600 text-white px-4 py-2 rounded">Next</button>
+				<button type="submit" class="submit-btn bg-green-600 text-white px-4 py-2 rounded hidden">Submit</button>
+				<button type="reset" class="reset-btn bg-gray-300 text-black px-4 py-2 rounded hidden">Redo</button>
+			</div>
+		</form>
+	}
+}
+

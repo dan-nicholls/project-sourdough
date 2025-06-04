@@ -33,7 +33,11 @@ templ StepForm(step app.Step, stepIndex int, totalSteps int, previousValues map[
 			</div>
 		}
 
-		<button type="submit">Next</button>
+		<button 
+			type="submit"
+			class="x-4 py-2 px-6 bg-yellow text-text-light font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition">
+			Next
+		</button>
 	</form>
 }
 
@@ -58,7 +62,11 @@ templ OrderDetails(previousValues map[string]string) {
 			<input type="email" id="email" name="email" placeholder="enter email">
 		</div>
 
-		<button type="submit">next</button>
+		<button 
+			type="submit"
+			class="x-4 py-2 px-6 bg-yellow text-text-light font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition">
+			Next
+		</button>
 	</form>
 }
 
@@ -80,8 +88,9 @@ templ OrderReview(previousValues map[string]string) {
 			hx-swap="innerHTML"
 			hx-headers='{"Content-Type": "application/json"}'
 			hx-vals={utils.JsonEscapedString(previousValues)}
-			class="bg-green-600 text-white px-4 py-2 rounded"
-		>Submit</button>
+			class="x-4 py-2 px-6 bg-green-600 text-text-dark font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition">
+			Submit
+		</button>
 	</form>
 	
 }
@@ -94,7 +103,10 @@ templ OrderStart() {
 			hx-target="#order-flow" 
 			hx-swap="innerHTML"
 		>
-			<button class="bg-blue-600 text-white px-4 py-2 rounded">Start</button>
+		<button 
+			class="x-4 py-2 px-6 bg-yellow text-text-dark font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition">
+			Start	
+		</button>
 		</form>
 	</div>
 }
@@ -113,13 +125,12 @@ templ OrderFailed() {
 		<div>
 			<h1>Oops!</h1>
 			<p>i may have broken something, please let Dan know!</p>
-			<button
+			<button 
 				hx-get="/"
 				hx-target="body"
 				hx-swap="innerHTML"
 				hx-push-url="/"
-				class="bg-blue-600 text-white px-4 py-2 rounded"
-			>
+				class="x-4 py-2 px-6 bg-yellow text-text-light font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition">
 				Go Back
 			</button>
 		</div>

@@ -1,44 +1,105 @@
 package templates
 
 import (
-	"strconv"
 	"fmt"
 
 	"github.com/dan-nicholls/project-sourdough/internal/app"
 	"github.com/dan-nicholls/project-sourdough/internal/utils"
 )
 
-templ OrderFlow() {
-	<div id="order-flow">
-	  <div hx-get="/order/step/start" hx-trigger="load" hx-target="#order-flow" hx-swap="innerHTML"></div>
+templ OrderView(steps []app.Step) {
+	<div class="bg-background rounded-2xl shadow-xl p-8 flex gap-10 min-w-md min-h-md flex-col" id="main-content" x-data="OrderForm()">
+		for i, step := range steps {
+			@OrderStep(i, step)
+		}
+
+	</div>
+
+	<script>
+		const OrderForm = () => ({
+			stepIndex: 0,
+			form: {},
+			nextStep() {
+				this.stepIndex++;
+			},
+			prevStep() {
+				this.stepIndex--;
+			}
+		})
+	</script>
+}
+
+// Generic Radio Group Element
+templ RadioGroupElement(title, value, description, model string) {
+	<label 
+		class="border rounded-lg p-4 w-60 cursor-pointer transition-all"
+		:class={fmt.Sprintf(`{
+			'border-blue-500 ring-2 ring-blue-300': form['%s'] === '%s',
+			'border-gray-300': form['%s'] !== '%s'
+		}`, model, value, model, value)} >
+		<div class="flex justify-between items-start">
+			<div>
+				<p class="font-semibold text-gray-800 capitalize">{title}</p>
+				<p class="text-sm text-gray-500">{description}</p>
+			</div>
+		<input
+			type="radio"
+			class="mt-1"
+			value={value}
+			:x-model={fmt.Sprintf(`form['%s']`, model)}
+			name={model}
+		/>
+		</div>
+	</label>
+}
+
+// Generic Radio Group Component
+templ RadioGroup(options []string, fieldName string) {
+	<div class="flex gap-4" x-data>
+		for _, option := range options {
+			@RadioGroupElement(option, option, "test", fieldName)
+		}
 	</div>
 }
 
-templ StepForm(step app.Step, stepIndex int, totalSteps int, previousValues map[string]string) {
-	<form 
-		hx-post={"/order/step/" + strconv.Itoa(stepIndex+1)}
-		hx-target="#order-flow"
-		hx-swap="innerHTML"
-	>
-		<!-- JSON-encoded state -->
-		for key, val := range previousValues {
-			<input type="hidden" name={key} value={val} />
-		}
 
-		<label>{step.Label}</label>
-		for _, opt := range step.Options {
-			<div>
-				<input type="radio" id={step.Name + "_" + opt} name={step.Name} value={opt} required />
-				<label for={step.Name + "_" + opt}>{opt}</label>
+templ OrderStep(index int, step app.Step) {
+	<template x-if={fmt.Sprintf("stepIndex == %d", index)}>
+		<div class="relative flex flex-col items-center w-full pt-16">
+
+			<!-- Floating Image -->
+			<div class="absolute -top-32" >
+				<div class="bg-white rounded-xl shadow-md p-2 border border-yellow-200">
+					<img src="/static/img/step_placeholder.png" class="rounded-md h-40 w-40 object-cover" alt="Bread Image">
+				</div>
 			</div>
-		}
 
-		<button 
-			type="submit"
-			class="x-4 py-2 px-6 bg-yellow text-text-light font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition">
-			Next
-		</button>
-	</form>
+			<!-- Step Title -->
+			<h2 class="text-2xl font-bold text-gray-800 mb-4">{step.Label}</h2>
+
+			<!-- Options -->
+			<div>
+				@RadioGroup(step.Options, step.Name)
+			</div>
+
+			
+			<!-- Prev/Next Buttons -->
+			<div class="flex gap-4 mt-6 w-full" >
+				<button
+					type="button"
+					@click="prevStep()"
+					class="flex-1 px-4 py-2 bg-yellow shadow rounded border">
+					Back
+				</button>
+				<button
+					type="button"
+					@click="nextStep()"
+					class="flex-1 px-4 py-2 bg-yellow shadow rounded border">
+					Next
+				</button>
+			</div>
+		</div>
+	</template>
 }
 
 templ OrderDetails(previousValues map[string]string) {

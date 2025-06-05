@@ -11,9 +11,10 @@ templ layout(title string) {
 		<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
 		<link rel="stylesheet" href="/static/css/tw.css" />		
 		<script src="https://unpkg.com/htmx.org@2.0.4" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+		<script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 		<title>{title}</title>
 	</head>
-	<body class="w-full h-full min-h-screen flex items-center justify-center bg-gray-100 font-sans">
+	<body id="body" class="w-full h-full min-h-screen flex items-center justify-center bg-gray-100 font-sans">
 		{children...}
 	</body>
 	</html>

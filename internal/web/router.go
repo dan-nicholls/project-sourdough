@@ -100,8 +100,7 @@ func CreateStepHandler(app *app.AppService) http.HandlerFunc {
 		}
 
 		// Save new answer
-		step := app.Steps[stepIndex]
-		err = templates.StepForm(step, stepIndex, len(app.Steps), state).Render(r.Context(), w)
+		err = templates.OrderView(app.Steps).Render(r.Context(), w)
 		if err != nil {
 			http.Error(w, "render error: "+err.Error(), http.StatusInternalServerError)
 		}
@@ -122,7 +121,7 @@ func NewRouter(app *app.AppService) http.Handler {
 	r.Post("/api/order", CreateOrderHandler(app))
 
 	r.Get("/order", func (w http.ResponseWriter, r *http.Request) {
-		templ.Handler(templates.OrderFlow()).ServeHTTP(w, r)
+		templ.Handler(templates.OrderView(app.Steps)).ServeHTTP(w, r)
 	})
 
 	r.Get("/order/start", func (w http.ResponseWriter, r *http.Request) {

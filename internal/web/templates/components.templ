@@ -6,7 +6,7 @@ import (
 
 // Generic Radio Group Element
 templ RadioGroupElement(title, value, description, model string) {
-	<label 
+	<label
 		class="border rounded-lg w-full p-4 cursor-pointer transition-all"
 		:class={fmt.Sprintf(`{
 			'border-blue-500 ring-2 ring-blue-300': form['%s'] === '%s',
@@ -21,7 +21,7 @@ templ RadioGroupElement(title, value, description, model string) {
 			type="radio"
 			class="mt-1"
 			value={value}
-			:x-model={fmt.Sprintf(`form['%s']`, model)}
+			:x-model={fmt.Sprintf("form['%s']", model)}
 			name={model}
 		/>
 		</div>
@@ -30,9 +30,40 @@ templ RadioGroupElement(title, value, description, model string) {
 
 // Generic Radio Group Component
 templ RadioGroup(options []string, fieldName string) {
-	<div class="grid grid-cols-1 gap-4 w-full max-w-xl mx-auto" x-data>
+	<div class="grid grid-cols-1 gap-4 w-full max-w-xl mx-auto">
 		for _, option := range options {
 			@RadioGroupElement(option, option, "test", fieldName)
 		}
 	</div>
+}
+
+templ Form(i int) {
+	<div x-data="FormState()" class="w-full flex flex-col items-center">
+		{children...}
+	</div>
+	<script>
+		const FormState = () => ({
+			formIndex: 0,
+			maxSteps: 6,
+			form: {},
+			nextStep() {
+				if (this.formIndex != this.maxSteps) {
+					this.formIndex++;
+				}
+			},
+			prevStep() { 
+				if (this.formIndex != 0) {
+					this.formIndex--;
+				}
+			}
+		})
+	</script>
+}
+
+templ FormStep(index int) {
+	<template x-if={fmt.Sprintf("formIndex == %d", index)}>
+		<div class="w-full">
+			{children...}
+		</div>
+	</template>
 }

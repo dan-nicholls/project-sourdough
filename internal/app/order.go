@@ -8,8 +8,8 @@ import (
 )
 
 type BreadOptions struct {
-	Shape string
-	Flour string
+	Shape   string
+	Flour   string
 	Topping string
 	Scoring string
 }
@@ -32,12 +32,12 @@ func (b *BreadOptions) Validate() error {
 
 
 type Order struct {
-	Id int64
-	Name string
-	Email string
+	Id        int64
+	Name      string
+	Email     string
 	OrderDate time.Time
-	Status string
-	Options BreadOptions
+	Status    string
+	Options   BreadOptions
 }
 
 func (a *AppService) InsertOrder(o Order) (Order, error) {
@@ -46,8 +46,8 @@ func (a *AppService) InsertOrder(o Order) (Order, error) {
 		VALUES (?,?,?,?,?,?,?,?)
 	`
 
-	result, err := a.Db.Exec(query, 
-		o.Name, 
+	result, err := a.Db.Exec(query,
+		o.Name,
 		o.Email,
 		o.Options.Shape,
 		o.Options.Flour,

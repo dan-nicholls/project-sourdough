@@ -6,14 +6,12 @@ import (
 
 type AppService struct {
 	Db db.Database
-	Config BreadConfigurations
-	Steps []Step
+	FormOptions []Option
 }
 
 func New(db db.Database) *AppService {
 	return &AppService{
 		Db: db,
-		Config: availableConfigs,
-		Steps: availableSteps,
+		FormOptions: FormOptions,
 	}
 }

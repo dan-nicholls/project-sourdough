@@ -15,7 +15,7 @@ import (
 func CreateOrderHandler(a *app.AppService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
-			log.Printf("Error parsing form: %v", err)	
+			log.Printf("Error parsing form: %v", err)
 			w.Header().Set("HX-Redirect", "/order/failed")
 			http.Error(w, "Invalid form data", http.StatusBadRequest)
 			return
@@ -94,13 +94,13 @@ func CreateStepHandler(app *app.AppService) http.HandlerFunc {
 			return
 		}
 
-		if stepIndex >= len(app.Steps) {
+		if stepIndex >= len(app.FormOptions) {
 			templates.OrderDetails(state).Render(r.Context(), w)
 			return
 		}
 
 		// Save new answer
-		err = templates.OrderView(app.Steps).Render(r.Context(), w)
+		err = templates.OrderView(app.FormOptions).Render(r.Context(), w)
 		if err != nil {
 			http.Error(w, "render error: "+err.Error(), http.StatusInternalServerError)
 		}
@@ -121,23 +121,8 @@ func NewRouter(app *app.AppService) http.Handler {
 	r.Post("/api/order", CreateOrderHandler(app))
 
 	r.Get("/order", func (w http.ResponseWriter, r *http.Request) {
-		templ.Handler(templates.OrderView(app.Steps)).ServeHTTP(w, r)
+		templ.Handler(templates.OrderView(app.FormOptions)).ServeHTTP(w, r)
 	})
 
-	r.Get("/order/start", func (w http.ResponseWriter, r *http.Request) {
-		templ.Handler(templates.OrderStart()).ServeHTTP(w, r)
-	})
-
-	r.Get("/order/complete", func (w http.ResponseWriter, r *http.Request) {
-		templ.Handler(templates.OrderComplete()).ServeHTTP(w, r)
-	})
-
-	r.Get("/order/failed", func (w http.ResponseWriter, r *http.Request) {
-		templ.Handler(templates.OrderFailed()).ServeHTTP(w, r)
-	})
-
-	r.Get("/order/step/{stepIndex}", CreateStepHandler(app))
-	r.Post("/order/step/{stepIndex}", CreateStepHandler(app))
-	
 	return r
 }

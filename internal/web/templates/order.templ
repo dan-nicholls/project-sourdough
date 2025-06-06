@@ -82,8 +82,8 @@ templ OrderContactInfo() {
 		<!-- Title -->
 		<h2 class="text-2xl font-bold text-gray-800 mb-4">Your Details</h2>
 
-		<input type="text" id="name" name="name" placeholder="Name" class="border rounded p-1 w-full max-w-xs">
-		<input type="email" id="email" name="email" placeholder="Email" class="border rounded p-1 w-full max-w-xs">
+		<input type="text" id="name" name="name" placeholder="Name" class="border rounded p-1 w-full max-w-xs" x-model="form.name">
+		<input type="email" id="email" name="email" placeholder="Email" class="border rounded p-1 w-full max-w-xs" x-model="form.email">
 
 		<!-- Prev/Next Buttons -->
 		<div class="flex gap-4 mt-6 w-full" >

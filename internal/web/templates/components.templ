@@ -21,7 +21,7 @@ templ RadioGroupElement(title, value, description, model string) {
 			type="radio"
 			class="mt-1"
 			value={value}
-			:x-model={fmt.Sprintf("form['%s']", model)}
+			x-model={fmt.Sprintf("form['%s']", model)}
 			name={model}
 		/>
 		</div>

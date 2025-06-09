@@ -106,7 +106,20 @@ templ OrderReview() {
 		<h2 class="text-2xl font-bold text-gray-800 mb-4">Review Order</h2>
 		
 		<!-- Order Preview -->
-		<pre class="w-full bg-gray-100 p-4 rounded" x-text="JSON.stringify(form,null, 2)"></pre>
+		<div class="w-full flex flex-row justify-around mb-4">
+			<div>
+				<h3 class="text-xl font-bold text-gray-800 mb-4">Contact Details</h3>
+				<p><strong>Name:</strong> <span x-text="form.name"></span></p>
+				<p><strong>Email:</strong> <span x-text="form.email"></span></p>
+			</div>
+			<div>
+				<h3 class="text-xl font-bold text-gray-800 mb-4">Bread Configuration</h3>
+				<template x-for="[key, value] in Object.entries(form.options)" :key="key">
+					<p><strong x-text="key" class="capitalize"></strong>: <span x-text="value"></span></p>
+				</template>
+			</div>
+		</div>
+
 
 		<!-- Prev/Next Buttons -->
 		<div class="flex gap-4 mt-6 w-full" >
@@ -118,7 +131,7 @@ templ OrderReview() {
 			</button>
 			<button
 				type="submit"
-				class="flex-1 px-4 py-2 bg-green-600 shadow rounded border">
+				class="flex-1 px-4 py-2 bg-green shadow rounded border">
 				Submit
 			</button>
 		</div>

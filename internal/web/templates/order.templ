@@ -108,10 +108,12 @@ templ OrderReview() {
 
 		<!-- Title -->
 		<h2 class="text-2xl font-bold text-gray-800 mb-4">Review Order</h2>
-
+		
+		<!-- Order Preview -->
 		<pre class="w-full bg-gray-100 p-4 rounded" x-text="JSON.stringify(form,null, 2)"></pre>
-		<form hx-post="/api/order" hx-target="body" hx-swap="innerHTML">
-			<template x-for="(value,key) in form" :key="key">
+
+		<form hx-post="/api/order" :hx-vals="form" hx-target="body" hx-swap="innerHTML" method="post">
+			<template x-for="(value, key) in form" :key="key">
 				<input type="hidden" :name="key" :value="value" />
 			</template>
 

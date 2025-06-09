@@ -61,9 +61,7 @@ templ Form(i int) {
 }
 
 templ FormStep(index int) {
-	<template x-if={fmt.Sprintf("formIndex == %d", index)}>
-		<div class="w-full">
-			{children...}
-		</div>
-	</template>
+	<div x-show={fmt.Sprintf("formIndex == %d", index)} x-cloak class="w-full">
+		{children...}
+	</div>
 }

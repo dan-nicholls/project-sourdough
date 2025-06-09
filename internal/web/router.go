@@ -16,7 +16,7 @@ func CreateOrderHandler(a *app.AppService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := r.ParseForm(); err != nil {
 			log.Printf("Error parsing form: %v", err)
-			w.Header().Set("HX-Redirect", "/order/failed")
+			w.Header().Set("HX-Redirect", "/error")
 			http.Error(w, "Invalid form data", http.StatusBadRequest)
 			return
 		}
@@ -43,7 +43,7 @@ func CreateOrderHandler(a *app.AppService) http.HandlerFunc {
 
 		if _, err := a.InsertOrder(order); err != nil {
 			log.Printf("Error inserting order: %v", err)	
-			w.Header().Set("HX-Redirect", "/order/failed")
+			w.Header().Set("HX-Redirect", "/error")
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

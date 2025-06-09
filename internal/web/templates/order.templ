@@ -134,7 +134,7 @@ templ OrderReview() {
 }
 
 templ OrderComplete() {
-	@layout("This is a title") {
+	@layout("Success!") {
 		<div>
 			<h1>🎉 Yippee!! 🎉</h1>
 			<p>Order confirmed!</p>
@@ -142,8 +142,8 @@ templ OrderComplete() {
 	}
 }
 
-templ OrderFailed() {
-	@layout("This is another title") {
+templ OrderError() {
+	@layout("Oops!") {
 		<div>
 			<h1>Oops!</h1>
 			<p>i may have broken something, please let Dan know!</p>

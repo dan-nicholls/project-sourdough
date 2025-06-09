@@ -3,13 +3,13 @@ package web
 import (
 	"log"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/a-h/templ"
 	"github.com/dan-nicholls/project-sourdough/internal/app"
 	"github.com/dan-nicholls/project-sourdough/internal/web/templates"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func CreateOrderHandler(a *app.AppService) http.HandlerFunc {
@@ -36,7 +36,7 @@ func CreateOrderHandler(a *app.AppService) http.HandlerFunc {
 
 		if err := order.Validate(); err != nil {
 			log.Printf("Error validating order: %v", err)	
-			w.Header().Set("HX-Redirect", "/order/failed")
+			w.Header().Set("HX-Redirect", "/error")
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
@@ -48,80 +48,36 @@ func CreateOrderHandler(a *app.AppService) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("HX-Redirect", "/order/complete")
+		w.Header().Set("HX-Redirect", "/success")
 		w.WriteHeader(http.StatusOK)
 	}
 }
 
-func CreateStepHandler(app *app.AppService) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
-		stepIndexStr := chi.URLParam(r, "stepIndex")
-
-		// Decode previous state from JSON
-		var state map[string]string = make(map[string]string)
-		
-		err := r.ParseForm(); if err != nil {
-			http.Error(w, "Error parsing form: "+err.Error(), http.StatusInternalServerError)
-		}
-
-		if len(r.Form) != 0 {
-			// Get new form vals
-			for i, k := range r.Form {
-				if len(k) != 0 {
-					state[i] = k[0]
-				}
-			}
-		}
-
-		if stepIndexStr == "start" {
-			templates.OrderStart().Render(r.Context(), w)
-			return
-		}
-
-		if stepIndexStr == "details" {
-			templates.OrderDetails(state).Render(r.Context(), w)
-			return
-		}
-
-		if stepIndexStr == "review" {
-			templates.OrderReview(state).Render(r.Context(), w)
-			return
-		}
-
-		stepIndex, err := strconv.Atoi(stepIndexStr)
-		if err != nil {
-			templates.OrderFailed().Render(r.Context(), w)
-			return
-		}
-
-		if stepIndex >= len(app.FormOptions) {
-			templates.OrderDetails(state).Render(r.Context(), w)
-			return
-		}
-
-		// Save new answer
-		err = templates.OrderView(app.FormOptions).Render(r.Context(), w)
-		if err != nil {
-			http.Error(w, "render error: "+err.Error(), http.StatusInternalServerError)
-		}
-	}
-}
-
-
 func NewRouter(app *app.AppService) http.Handler {
 	r := chi.NewRouter()
+	r.Use(middleware.Logger)
 
-	// Serve static files
+	// API Routes
+	r.Post("/api/order", CreateOrderHandler(app))
+
+	// UI Routes
 	fs := http.FileServer(http.Dir("./static"))
 	r.Handle("/static/*", http.StripPrefix("/static/",  fs))
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		templ.Handler(templates.Home("This is an intro test")).ServeHTTP(w, r)
 	})
-	r.Post("/api/order", CreateOrderHandler(app))
 
 	r.Get("/order", func (w http.ResponseWriter, r *http.Request) {
 		templ.Handler(templates.OrderView(app.FormOptions)).ServeHTTP(w, r)
+	})
+	
+	r.Get("/success", func (w http.ResponseWriter, r *http.Request) {
+		templ.Handler(templates.OrderComplete()).ServeHTTP(w,r)
+	})
+
+	r.Get("/error", func (w http.ResponseWriter, r *http.Request) {
+		templ.Handler(templates.OrderError()).ServeHTTP(w, r)
 	})
 
 	return r

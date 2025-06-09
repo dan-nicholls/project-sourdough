@@ -136,8 +136,18 @@ templ OrderReview() {
 templ OrderComplete() {
 	@layout("Success!") {
 		<div>
-			<h1>🎉 Yippee!! 🎉</h1>
+			<h2 class="text-2xl font-bold text-gray-800 mb-4">🎉 Yippee!! 🎉</h2>
 			<p>Order confirmed!</p>
+			<div class="flex mt-6 w-full">
+				<button 
+					hx-get="/"
+					hx-target="body"
+					hx-swap="innerHTML"
+					hx-push-url="/"
+					class="flex-1 py-4 px-2 bg-yellow text-text-light font-semibold rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-yellow-400 transition">
+					Go Home
+				</button>
+			</div>
 		</div>
 	}
 }
@@ -145,7 +155,7 @@ templ OrderComplete() {
 templ OrderError() {
 	@layout("Oops!") {
 		<div>
-			<h1>Oops!</h1>
+			<h2 class="text-2xl font-bold text-gray-800 mb-4">Oops!!</h2>
 			<p>i may have broken something, please let Dan know!</p>
 			<button 
 				hx-get="/"

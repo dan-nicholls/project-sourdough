@@ -15,7 +15,9 @@ templ layout(title string) {
 		<title>{title}</title>
 	</head>
 	<body id="body" class="w-full h-full min-h-screen flex items-center justify-center bg-gray-100 font-sans">
-		{children...}
+		<div class="bg-background rounded-2xl shadow-xl p-8" id="main-content">
+			{children...}
+		</div>
 	</body>
 	</html>
 }

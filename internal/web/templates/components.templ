@@ -6,12 +6,7 @@ import (
 
 // Generic Radio Group Element
 templ RadioGroupElement(title, value, description, model string) {
-	<label
-		class="border rounded-lg w-full p-4 cursor-pointer transition-all"
-		:class={fmt.Sprintf(`{
-			'border-blue-500 ring-2 ring-blue-300': form['%s'] === '%s',
-			'border-gray-300': form['%s'] !== '%s'
-		}`, model, value, model, value)} >
+	<label class="border rounded-lg w-full p-4 cursor-pointer transition-all" >
 		<div class="flex justify-between items-start w-full">
 			<div>
 				<p class="font-semibold text-gray-800 capitalize">{title}</p>
@@ -21,8 +16,8 @@ templ RadioGroupElement(title, value, description, model string) {
 			type="radio"
 			class="mt-1"
 			value={value}
-			x-model={fmt.Sprintf("form['%s']", model)}
-			name={model}
+			name={fmt.Sprintf("options[%s]", model)}
+			x-model={fmt.Sprintf("form.options['%s']", model)}
 		/>
 		</div>
 	</label>
@@ -38,14 +33,15 @@ templ RadioGroup(options []string, fieldName string) {
 }
 
 templ Form(i int) {
-	<div x-data="FormState()" class="w-full flex flex-col items-center">
+	<form x-data="FormState()" hx-post="/api/order" hx-ext="json-enc-custom" class="w-full flex flex-col items-center">
 		{children...}
-	</div>
+	</form>
 	<script>
 		const FormState = () => ({
 			formIndex: 0,
+			// TODO - Make maxSteps Dynamic
 			maxSteps: 6,
-			form: {},
+			form: { options: {} },
 			nextStep() {
 				if (this.formIndex != this.maxSteps) {
 					this.formIndex++;

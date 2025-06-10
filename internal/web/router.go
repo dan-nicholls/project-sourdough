@@ -16,6 +16,7 @@ func NewRouter(app *app.AppService) http.Handler {
 
 	// API Routes
 	r.Post("/api/order", CreateOrderHandler(app))
+	r.Post("/api/auth", AuthHandler(app.TokenStore, app.AccessCode))	
 
 	// UI Routes
 	fs := http.FileServer(http.Dir("./static"))
@@ -28,7 +29,6 @@ func NewRouter(app *app.AppService) http.Handler {
 	})
 	
 	r.Get("/success", SuccessHandler)
-
 	r.Get("/error", ErrorHandler)
 
 	return r

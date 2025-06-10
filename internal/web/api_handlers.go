@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/dan-nicholls/project-sourdough/internal/app"
 	"github.com/dan-nicholls/project-sourdough/internal/utils"
 )
@@ -108,5 +110,48 @@ func CreateOrderHandler(a *app.AppService) http.HandlerFunc {
 
 		w.Header().Set("HX-Redirect", "/success")
 		w.WriteHeader(http.StatusOK)
+	}
+}
+
+// GET - /order
+// DELETE - /order/:id
+// PATCH - /order/:id
+
+// POST - /auth
+type TokenResponse struct {
+	Token string `json:"token"`
+}
+
+type AuthRequest struct {
+	Code string `json:"code"`
+}
+
+func AuthHandler(store app.TokenStore, keyword string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var ar AuthRequest
+		err := json.NewDecoder(r.Body).Decode(&ar)
+		if err != nil {
+			log.Printf("Unable to parse AuthRequest", err)	
+			w.Header().Set("HX-Redirect", "/error")
+			http.Error(w, "Invalid JSON body", http.StatusBadRequest)
+			return
+		}
+
+		if ar.Code != keyword {
+			log.Printf("Invalid keyword used: %v", ar.Code)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		t := app.Token{
+			ID: uuid.New().String(),
+			IssuedAt: time.Now(),
+			ExpiresAt: time.Now().Add(time.Minute*5),
+			Used: false,
+		}
+
+		store.SaveToken(t)
+		w.Header().Add("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(TokenResponse{Token: t.ID})
 	}
 }

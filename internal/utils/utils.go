@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"html"
 	"strconv"
+	"regexp"
 )
 
 func MapToHtmlString(m map[string]string) string {
@@ -31,3 +32,8 @@ func JsonEscapedString(m map[string]string) string {
 	return strconv.Quote(string(b))
 }
 
+func IsValidEmail(email string) bool {
+	const emailRegex = `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	re := regexp.MustCompile(emailRegex)
+	return re.MatchString(email)
+}

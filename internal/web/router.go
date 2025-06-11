@@ -15,7 +15,7 @@ func NewRouter(app *app.AppService) http.Handler {
 	r.Use(middleware.Logger)
 
 	// API Routes
-	r.Post("/api/order", CreateOrderHandler(app))
+	r.With(TokenAuthMiddleware(app.TokenStore)).Post("/api/order", CreateOrderHandler(app))
 	r.Post("/api/auth", AuthHandler(app.TokenStore, app.AccessCode))	
 
 	// UI Routes

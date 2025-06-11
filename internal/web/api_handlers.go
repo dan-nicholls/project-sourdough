@@ -108,14 +108,14 @@ func CreateOrderHandler(a *app.AppService) http.HandlerFunc {
 			return
 		}
 
+		if t, ok := GetTokenFromContext(r.Context()); ok {
+			a.TokenStore.MarkUsed(t.ID)
+		}
+
 		w.Header().Set("HX-Redirect", "/success")
 		w.WriteHeader(http.StatusOK)
 	}
 }
-
-// GET - /order
-// DELETE - /order/:id
-// PATCH - /order/:id
 
 // POST - /auth
 type TokenResponse struct {

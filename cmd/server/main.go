@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"flag"
 
 	"github.com/dan-nicholls/project-sourdough/internal/app"
 	"github.com/dan-nicholls/project-sourdough/internal/db"
@@ -14,28 +15,41 @@ func main() {
 	fmt.Println("Starting Project Sourdough...")
 
 	// Load Configurations
-	port := 3000
-	dbPath := "./orders.db"
+	var port = flag.Int("port", 3000, "Port to run the server on")
+	var mock = flag.Bool("mock", false, "run with mock database")
+	var code = flag.String("code", "Bread", "Code to allow auth access")
 
-	// Initialise DB
-	sqlite := &db.Sqlite3{}
-	if err := sqlite.Connect(dbPath); err != nil {
-		log.Fatalf("Failed to connect: %v", err)
-	}
-	defer sqlite.Close()
+	flag.Parse()
 
-	if err := sqlite.EnsureSchema(); err != nil {
-		log.Fatalf("Failed to intialise schema: %v", err)
-	}
+	// Setup DB
+	var database db.Database 
+	if *mock {
+		log.Println("Running in Mock Mode")
+		database = &db.MockDB{}
+		defer database.Close()
+	} else {
+		// Initialise DB
+		dbPath := "./orders.db"
+
+		database = &db.Sqlite3{}
+		if err := database.Connect(dbPath); err != nil {
+			log.Fatalf("Failed to connect: %v", err)
+		}
+		defer database.Close()
+
+		if err := db.InitialiseDB(database); err != nil {
+			log.Fatalf("Failed to intialise schema: %v", err)
+		}
+	} 
 	
 	// Setup app
-	appService := app.New(sqlite)
+	appService := app.New(database, *code)
 
 	server := &http.Server{
 		Handler: web.NewRouter(appService),
-		Addr: fmt.Sprintf(":%d", port),
+		Addr: fmt.Sprintf(":%d", *port),
 	}
 
-	fmt.Printf("🚀 Server running at port: %d\n", port)
+	fmt.Printf("🚀 Server running at port: %d\n", *port)
 	log.Fatal(server.ListenAndServe())
 }

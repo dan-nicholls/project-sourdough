@@ -11,12 +11,12 @@ type AppService struct {
 	TokenStore TokenStore
 }
 
-func New(db db.Database) *AppService {
+func New(db db.Database, code string) *AppService {
 	store := NewDemoTokenStore()
 	return &AppService{
 		Db: db,
 		FormOptions: FormOptions,
-		AccessCode: "Bread",
+		AccessCode: code,
 		TokenStore: &store,
 	}
 }

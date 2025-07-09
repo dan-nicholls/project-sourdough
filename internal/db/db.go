@@ -42,7 +42,7 @@ func (s *Sqlite3) Exec(query string, args ...interface{}) (sql.Result, error) {
 	return s.db.Exec(query, args...)
 }
 
-func (s *Sqlite3) EnsureSchema() error {
+func InitialiseDB(d Database) error {
 	query := `
 		CREATE TABLE IF NOT EXISTS orders (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -55,7 +55,11 @@ func (s *Sqlite3) EnsureSchema() error {
 			order_date TIMESTAMP NOT NULL,
 			status TEXT NOT NULL
 		);`
-	_, err := s.db.Exec(query)
-	return err
+
+	_, err := d.Exec(query)
+	if err != nil {
+		return fmt.Errorf("failed to initialize schema: %w", err)
+	}
+	return nil
 }
 

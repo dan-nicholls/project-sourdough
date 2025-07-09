@@ -33,7 +33,7 @@ templ RadioGroup(options []string, fieldName string) {
 }
 
 templ Form(i int) {
-	<form x-data="FormState()" hx-post="/api/order" hx-ext="json-enc-custom" class="w-full flex flex-col items-center">
+	<form x-data="FormState()" hx-post="/api/order" :hx-headers="JSON.stringify({ Authorization: `Bearer ${token}` })" hx-ext="json-enc-custom" class="w-full flex flex-col items-center">
 		{children...}
 	</form>
 	<script>
@@ -42,6 +42,10 @@ templ Form(i int) {
 			// TODO - Make maxSteps Dynamic
 			maxSteps: 6,
 			form: { options: {} },
+			token: null,
+			codeError: false,
+			isLoading: false,
+			headers: {},
 			nextStep() {
 				if (this.formIndex != this.maxSteps) {
 					this.formIndex++;
@@ -50,6 +54,26 @@ templ Form(i int) {
 			prevStep() { 
 				if (this.formIndex != 0) {
 					this.formIndex--;
+				}
+			},
+			async ValidateCode() {
+				this.codeError = false;
+				this.isLoading = true;
+				try {
+					const res = await fetch("/api/auth", {
+						method: "POST",
+						headers: {"Content-Type": "application/json"},
+						body: JSON.stringify({ code: this.form.code })
+					})
+					if (!res.ok) throw new Error("Invalid Code")
+					const data = await res.json()
+					this.token = data.token
+					console.log(this.token)
+					this.formIndex++
+				} catch (e) {
+					this.codeError = true;
+				} finally {
+					this.isLoading = false;
 				}
 			}
 		})

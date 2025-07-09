@@ -21,7 +21,7 @@ func GetTokenFromContext(ctx context.Context) (app.Token, bool) {
 func TokenAuthMiddleware(ts app.TokenStore) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authentication")
+			authHeader := r.Header.Get("Authorization")
 			const prefix = "Bearer "
 
 			if !strings.HasPrefix(authHeader, prefix) {
